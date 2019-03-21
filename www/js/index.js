@@ -1,46 +1,134 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-var app = {
-    // Application Constructor
-    initialize: function() {
-        document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+// window.onerror = function(error) {
+//     alert(error);
+// };
+var app = {   
+    options: null,
+    marker:null,
+    map:null,
+    
+    init: function () {
+      if (window.hasOwnProperty("cordova")) {
+          document.addEventListener("deviceready", app.ready, false);
+          console.log("Porfavor");
+      } else {
+          document.addEventListener("DOMContentLoaded", app.ready);
+          
+      }
+  },
+    ready: function() {
+      
+      if (navigator.geolocation) {
+        
+        let giveUp = 1000 * 10;
+        let toOld = 1000 * 60 * 60;
+  
+        app.options = {
+          enableHighAccuracy: true,
+          timeout: giveUp,
+          maximumAge: toOld
+        };
+       
+        navigator.geolocation.getCurrentPosition(app.initMap, app.posFail, app.options);
+      } else {
+        console.log("This old browser doesn't support geolocation");
+      }
+    },
+  
+    initMap: function(position) {
+        let s = document.createElement("script");
+        document.head.appendChild(s);
+    
+        s.addEventListener("load",()=>{
+              app.map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: position.coords.latitude, lng: position.coords.longitude},
+                zoom: 16,
+                //restriction: { north: 45.0, south: 40.0, west: -100, east: -80 },
+                minZoom: 10,
+                maxZoom: 15,
+                disableDoubleClickZoom: true,
+                clickableIcons: false,
+                disableDefaultUI: true
+                //mapTypeId: google.maps.MapTypeId.ROADMAP
+              });
+
+              app.map.addListener("dblclick", function(e){
+               app.addMyMarker(e.latLng, app.map)
+              })
+              
+              app.map.addListener("center_changed", function() {
+                console.log("I'm doing something")
+                window.setTimeout(function() {
+                app.map.panTo(app.marker.getPosition());
+                }, 9000);
+              });    
+        });
+             s.src = `https://maps.googleapis.com/maps/api/js?key=${myKey}`;
+
+    },
+  
+    posFail: function(err) {
+  
+      let errors = {
+          1: 'No permission',
+          2: 'Unable to determine',
+          3: 'Took too long'
+      }
+      document.querySelector('.h1').textContent = errors[err];
+      console.log('posFail', err);
     },
 
-    // deviceready Event Handler
-    //
-    // Bind any cordova events here. Common events are:
-    // 'pause', 'resume', etc.
-    onDeviceReady: function() {
-        this.receivedEvent('deviceready');
-    },
+    addMyMarker: function(latLng, map){
+        let label = prompt("What's your sign?");
+        localStorage.setItem("label", label);
+        // if (label == false){
+     
+        // }
+    app.marker = new google.maps.Marker({
+    position: latLng,
+    map: map,
+    draggable: true,
+    animation: google.maps.Animation.DROP,
+    label: label
+  });
+   app.marker.setMap(map);
 
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
+   app.clickedMarker(app.marker.position, map, app.marker);
 
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
+ },
+clickedMarker: function(position, map, marker){
+  console.log(position);
+    marker.addListener("click", function(e) {
+    map.setZoom(50);
+    map.setCenter(marker.getPosition());
+    app.infowind(e.latLng, map, marker ); 
+ });
+ 
+},
+infowind:function(position, map, marker){
+    let infoWindow = new google.maps.InfoWindow({ map: map });
+    infoWindow.setPosition(position);
+   let contentDiv = document.createElement("div");
+   let label = document.createElement("h2");
 
-        console.log('Received Event: ' + id);
-    }
-};
+   let btn = document.createElement("button");
 
-app.initialize();
+   label.textContent = marker.label;
+   contentDiv.appendChild(label);
+   btn.textContent = "Delete me";
+
+   btn.addEventListener("click", ev => {
+    console.log("button inside info window was clicked");
+    marker.setMap(null);
+    infoWindow.close();
+   });
+
+   contentDiv.appendChild(btn);
+   infoWindow.setContent(contentDiv);
+
+   map.setCenter(position);
+}
+
+  };
+  
+  app.init();
+  
