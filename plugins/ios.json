@@ -7,10 +7,13 @@
     "files": {}
   },
   "installed_plugins": {
-    "cordova-plugin-whitelist": {
+    "cordova-plugin-camera": {
       "PACKAGE_NAME": "ca.edumedia.osor0024.findr"
     },
     "cordova-plugin-geolocation": {
+      "PACKAGE_NAME": "ca.edumedia.osor0024.findr"
+    },
+    "cordova-plugin-whitelist": {
       "PACKAGE_NAME": "ca.edumedia.osor0024.findr"
     }
   },

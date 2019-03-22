@@ -5,7 +5,7 @@ var app = {
     options: null,
     marker:null,
     map:null,
-    
+    markerList: [],
     init: function () {
       if (window.hasOwnProperty("cordova")) {
           document.addEventListener("deviceready", app.ready, false);
@@ -20,7 +20,7 @@ var app = {
       if (navigator.geolocation) {
         
         let giveUp = 1000 * 10;
-        let toOld = 1000 * 60 * 60;
+        let toOld = 1000 * 60;
   
         app.options = {
           enableHighAccuracy: true,
@@ -59,7 +59,7 @@ var app = {
                 console.log("I'm doing something")
                 window.setTimeout(function() {
                 app.map.panTo(app.marker.getPosition());
-                }, 9000);
+                }, 10000);
               });    
         });
              s.src = `https://maps.googleapis.com/maps/api/js?key=${myKey}`;
@@ -78,20 +78,31 @@ var app = {
     },
 
     addMyMarker: function(latLng, map){
-        let label = prompt("What's your sign?");
-        localStorage.setItem("label", label);
-        // if (label == false){
-     
-        // }
+        let title  = prompt("What's your sign?");
+  
     app.marker = new google.maps.Marker({
     position: latLng,
     map: map,
     draggable: true,
     animation: google.maps.Animation.DROP,
-    label: label
+    label: "A",
+    title: title 
   });
    app.marker.setMap(map);
 
+
+   app.markerList.push(app.marker);
+   localStorage.setItem(JSON.stringify(app.markerList));
+  //  let saveData = { 
+  //   title: app.marker.title,
+  //   position: app.marker.position
+  //  };
+  //  let dataSaved = JSON.stringify(saveData);
+   
+  //  localStorage.setItem("data", dataSaved );
+  console.log(app.markerList);
+  app.getData(app.markerList);
+   
    app.clickedMarker(app.marker.position, map, app.marker);
 
  },
@@ -108,16 +119,18 @@ infowind:function(position, map, marker){
     let infoWindow = new google.maps.InfoWindow({ map: map });
     infoWindow.setPosition(position);
    let contentDiv = document.createElement("div");
-   let label = document.createElement("h2");
+   let title  = document.createElement("h2");
+   let label  = document.createElement("h1");
 
    let btn = document.createElement("button");
 
    label.textContent = marker.label;
+   title.textContent = marker.title;
    contentDiv.appendChild(label);
+   contentDiv.appendChild(title);
    btn.textContent = "Delete me";
 
    btn.addEventListener("click", ev => {
-    console.log("button inside info window was clicked");
     marker.setMap(null);
     infoWindow.close();
    });
@@ -126,6 +139,53 @@ infowind:function(position, map, marker){
    infoWindow.setContent(contentDiv);
 
    map.setCenter(position);
+
+  
+},
+
+getData: function(theList){
+   
+   let makerStored = localStorage.getItem(data);
+   
+    console.log(JSON.parse(makerStored));
+
+    theList.array.forEach(element => {
+      app.marker = new google.maps.Marker({
+        position: latLng,
+        map: map,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+        label: "A",
+        title: title 
+      });
+       app.marker.setMap(map);
+
+       let infoWindow = new google.maps.InfoWindow({ map: map });
+    infoWindow.setPosition(position);
+   let contentDiv = document.createElement("div");
+   let title  = document.createElement("h2");
+   let label  = document.createElement("h1");
+
+   let btn = document.createElement("button");
+
+   label.textContent = marker.label;
+   title.textContent = marker.title;
+   contentDiv.appendChild(label);
+   contentDiv.appendChild(title);
+   btn.textContent = "Delete me";
+
+   btn.addEventListener("click", ev => {
+    marker.setMap(null);
+    infoWindow.close();
+   });
+
+   contentDiv.appendChild(btn);
+   infoWindow.setContent(contentDiv);
+
+   map.setCenter(position);
+
+    });
+
 }
 
   };

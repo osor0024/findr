@@ -12,6 +12,9 @@
     },
     "cordova-plugin-geolocation": {
       "PACKAGE_NAME": "ca.edumedia.osor0024.findr"
+    },
+    "cordova-plugin-camera": {
+      "PACKAGE_NAME": "ca.edumedia.osor0024.findr"
     }
   },
   "dependent_plugins": {}

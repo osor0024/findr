@@ -43,9 +43,13 @@
         <icon height="167" src="res/icon/ios/icon-167.png" width="167" />
         <icon height="167" src="res/icon/ios/icon-83.5@2x.png" width="167" />
     </platform>
-    <plugin name="cordova-plugin-geolocation" spec="^4.0.1" />
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="3000" />
+    <plugin name="cordova-plugin-geolocation" spec="^4.0.1" />
+    <edit-config file="*-Info.plist" mode="merge" target="NSLocationWhenInUseUsageDescription">
+        <string>Have to add markers to the Google Map</string>
+    </edit-config>
+    <plugin name="cordova-plugin-camera" spec="^4.0.3" />
     <engine name="android" spec="^7.1.4" />
     <engine name="ios" spec="^4.5.5" />
 </widget>
