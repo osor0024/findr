@@ -50,13 +50,29 @@ var app = {
                 disableDefaultUI: true
                 //mapTypeId: google.maps.MapTypeId.ROADMAP
               });
+              
+              //let dataString = JSON.parse(localStorage.getItem("data"));
+
+              //let dataString = JSON.parse(getData);
+              
+              // dataString.forEach(element => {
+
+              //   app.marker = new google.maps.Marker({
+              //     position: element.position,
+              //     map: element.map,
+              //     // draggable: true,
+              //     // animation: google.maps.Animation.DROP,
+              //     // label: "A",
+              //     title: element.title 
+              //   });
+              //    app.marker.setMap(map);
+              // });
 
               app.map.addListener("dblclick", function(e){
                app.addMyMarker(e.latLng, app.map)
               })
               
               app.map.addListener("center_changed", function() {
-                console.log("I'm doing something")
                 window.setTimeout(function() {
                 app.map.panTo(app.marker.getPosition());
                 }, 10000);
@@ -90,18 +106,16 @@ var app = {
   });
    app.marker.setMap(map);
 
-
-   app.markerList.push(app.marker);
-   localStorage.setItem(JSON.stringify(app.markerList));
   //  let saveData = { 
-  //   title: app.marker.title,
-  //   position: app.marker.position
+  //   position: latLng,
+  //   map: map,
+  //   title: title
   //  };
-  //  let dataSaved = JSON.stringify(saveData);
+  //  let markerList = [];
+  //  markerList.push(saveData);
    
-  //  localStorage.setItem("data", dataSaved );
-  console.log(app.markerList);
-  app.getData(app.markerList);
+  //  localStorage.setItem("data" , JSON.stringify(markerList));
+ 
    
    app.clickedMarker(app.marker.position, map, app.marker);
 
@@ -143,50 +157,13 @@ infowind:function(position, map, marker){
   
 },
 
-getData: function(theList){
+// getData: function(){
    
-   let makerStored = localStorage.getItem(data);
+//    let makerStored = localStorage.getItem(data);
    
-    console.log(JSON.parse(makerStored));
+//     console.log(JSON.parse(makerStored));
 
-    theList.array.forEach(element => {
-      app.marker = new google.maps.Marker({
-        position: latLng,
-        map: map,
-        draggable: true,
-        animation: google.maps.Animation.DROP,
-        label: "A",
-        title: title 
-      });
-       app.marker.setMap(map);
-
-       let infoWindow = new google.maps.InfoWindow({ map: map });
-    infoWindow.setPosition(position);
-   let contentDiv = document.createElement("div");
-   let title  = document.createElement("h2");
-   let label  = document.createElement("h1");
-
-   let btn = document.createElement("button");
-
-   label.textContent = marker.label;
-   title.textContent = marker.title;
-   contentDiv.appendChild(label);
-   contentDiv.appendChild(title);
-   btn.textContent = "Delete me";
-
-   btn.addEventListener("click", ev => {
-    marker.setMap(null);
-    infoWindow.close();
-   });
-
-   contentDiv.appendChild(btn);
-   infoWindow.setContent(contentDiv);
-
-   map.setCenter(position);
-
-    });
-
-}
+// }
 
   };
   
